@@ -62,6 +62,13 @@ const nextConfig = {
     optimizeCss: true,
     scrollRestoration: true,
   },
+  // Explicitly include markdown files for Vercel deployment
+  outputFileTracingIncludes: {
+    '/posts/*': ['./content/**/*.md'],
+    '/posts/claude-code-guide': ['./content/**/*.md'],
+    '/api/*': ['./content/**/*.md'],
+    '/*': ['./content/**/*.md']
+  },
   // Bundle analyzer for development
   ...(process.env.ANALYZE === 'true' && {
     webpack: (config) => {
