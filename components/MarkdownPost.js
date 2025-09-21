@@ -1,7 +1,7 @@
 // SmartICE Markdown Post Component
-// Version: 1.7.0 - Fixed TOC navigation by properly extracting text from React children for consistent ID generation
+// Version: 1.8.0 - Fixed duplicate ID generation and hydration mismatch issues with pre-computed ID mapping
 
-import React, { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import remarkBreaks from 'remark-breaks'
@@ -17,11 +17,12 @@ const MarkdownPost = ({ content, title, author = 'Jeremy', date = new Date().toL
   const [hoveredItem, setHoveredItem] = useState(null)
   const observerRef = useRef(null)
   const timeoutRef = useRef(null)
+  const headingIdMap = useRef(new Map())
 
   // Generate ID from text that works with both English and Chinese
   const generateId = (text) => {
-    return text
-      .toString()
+    // Ensure we have a string
+    const cleanText = String(text || '')
       .toLowerCase()
       .trim()
       // Remove emoji and special characters but keep Chinese characters
@@ -32,6 +33,9 @@ const MarkdownPost = ({ content, title, author = 'Jeremy', date = new Date().toL
       .replace(/-+/g, '-')
       // Remove leading/trailing hyphens
       .replace(/^-|-$/g, '')
+
+    // If empty after cleaning, generate a fallback ID
+    return cleanText || `section-${Date.now()}`
   }
 
   // Helper function to extract plain text from React children
@@ -104,13 +108,29 @@ const MarkdownPost = ({ content, title, author = 'Jeremy', date = new Date().toL
       const minutes = Math.ceil(wordCount / 200)
       setReadingTime(minutes)
 
+      // Clear the heading ID map for fresh generation
+      headingIdMap.current.clear()
+
       // Generate table of contents from headers
       const headers = content.match(/^#{1,6}\s.+$/gm) || []
+      const seenIds = new Set()
       const toc = headers.map((header, index) => {
         const level = (header.match(/^#+/) || [''])[0].length
         const text = header.replace(/^#+\s/, '').replace(/\s*\{.*\}$/, '')
-        const id = generateId(text)
-        console.log('TOC item - Text:', text, 'ID:', id) // Debug log
+        let id = generateId(text)
+
+        // Ensure unique IDs
+        let counter = 1
+        let originalId = id
+        while (seenIds.has(id)) {
+          id = `${originalId}-${counter}`
+          counter++
+        }
+        seenIds.add(id)
+
+        // Store the mapping for use in heading components
+        headingIdMap.current.set(text, id)
+
         return { level, text, id, index }
       })
       setTableOfContents(toc)
@@ -149,7 +169,8 @@ const MarkdownPost = ({ content, title, author = 'Jeremy', date = new Date().toL
     // Custom heading renderer with anchor links
     h1: ({ children, ...props }) => {
       const text = extractTextFromChildren(children)
-      const id = generateId(text)
+      // Use the pre-generated ID from the map, or generate a new one
+      const id = headingIdMap.current.get(text) || generateId(text)
       return (
         <h1 id={id} className="text-4xl font-bold text-dark-text mb-6 scroll-mt-32" {...props}>
           {children}
@@ -158,8 +179,8 @@ const MarkdownPost = ({ content, title, author = 'Jeremy', date = new Date().toL
     },
     h2: ({ children, ...props }) => {
       const text = extractTextFromChildren(children)
-      const id = generateId(text)
-      console.log('H2 - Text:', text, 'ID:', id) // Debug log
+      // Use the pre-generated ID from the map, or generate a new one
+      const id = headingIdMap.current.get(text) || generateId(text)
       return (
         <h2 id={id} className="text-3xl font-semibold text-dark-text mt-12 mb-4 scroll-mt-32" {...props}>
           {children}
@@ -168,7 +189,8 @@ const MarkdownPost = ({ content, title, author = 'Jeremy', date = new Date().toL
     },
     h3: ({ children, ...props }) => {
       const text = extractTextFromChildren(children)
-      const id = generateId(text)
+      // Use the pre-generated ID from the map, or generate a new one
+      const id = headingIdMap.current.get(text) || generateId(text)
       return (
         <h3 id={id} className="text-2xl font-semibold text-dark-text mt-8 mb-3 scroll-mt-32" {...props}>
           {children}
@@ -177,7 +199,8 @@ const MarkdownPost = ({ content, title, author = 'Jeremy', date = new Date().toL
     },
     h4: ({ children, ...props }) => {
       const text = extractTextFromChildren(children)
-      const id = generateId(text)
+      // Use the pre-generated ID from the map, or generate a new one
+      const id = headingIdMap.current.get(text) || generateId(text)
       return (
         <h4 id={id} className="text-xl font-semibold text-dark-text mt-6 mb-2 scroll-mt-32" {...props}>
           {children}
