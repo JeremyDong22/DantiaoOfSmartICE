@@ -47,9 +47,8 @@ yarn-error.log
 # =============================================================================
 
 # Internal documentation
-claude-code-guide.md
-README.md
-*.md
+# Keep content folder markdown files
+!content/*.md
 
 # Setup scripts
 setup.sh
