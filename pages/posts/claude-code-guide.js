@@ -153,34 +153,43 @@ export async function getStaticProps({ locale }) {
     // Detailed logging for debugging
     console.log('=== Markdown Loading Debug Info ===')
     console.log('Current Working Directory:', process.cwd())
+    console.log('Node Environment:', process.env.NODE_ENV)
+    console.log('Vercel Environment:', process.env.VERCEL)
     console.log('Locale:', locale)
     console.log('Trying to load file:', fileName)
 
-    const filePath = path.join(process.cwd(), 'content', fileName)
-    console.log('Full file path:', filePath)
+    // Try multiple possible paths
+    const possiblePaths = [
+      path.join(process.cwd(), 'content', fileName),
+      path.join(process.cwd(), 'public', 'content', fileName),
+      path.join(process.cwd(), fileName),
+    ]
 
-    // Check if file exists
-    const fileExists = fs.existsSync(filePath)
-    console.log('File exists:', fileExists)
+    console.log('Trying paths:', possiblePaths)
 
-    if (!fileExists) {
-      // List files in content directory
-      const contentDir = path.join(process.cwd(), 'content')
-      console.log('Content directory path:', contentDir)
+    let filePath = null
+    let markdownContent = null
 
-      if (fs.existsSync(contentDir)) {
-        const files = fs.readdirSync(contentDir)
-        console.log('Files in content directory:', files)
+    for (const tryPath of possiblePaths) {
+      console.log(`Checking path: ${tryPath}`)
+      if (fs.existsSync(tryPath)) {
+        console.log(`✅ Found file at: ${tryPath}`)
+        filePath = tryPath
+        markdownContent = fs.readFileSync(tryPath, 'utf8')
+        break
       } else {
-        console.log('Content directory does not exist!')
-
-        // Try to list root directory files
-        const rootFiles = fs.readdirSync(process.cwd())
-        console.log('Files in root directory:', rootFiles.filter(f => !f.startsWith('.')))
+        console.log(`❌ Not found at: ${tryPath}`)
       }
     }
 
-    const markdownContent = fs.readFileSync(filePath, 'utf8')
+    if (!filePath || !markdownContent) {
+      // List what files ARE available for debugging
+      console.log('File not found! Listing available directories:')
+      const rootFiles = fs.readdirSync(process.cwd())
+      console.log('Root directory files:', rootFiles.filter(f => !f.startsWith('.')))
+
+      throw new Error(`File not found in any of the expected locations: ${possiblePaths.join(', ')}`)
+    }
     console.log('Successfully loaded markdown, length:', markdownContent.length)
     console.log('=== End Debug Info ===')
 
