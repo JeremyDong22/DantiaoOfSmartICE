@@ -1,5 +1,5 @@
 // SmartICE Markdown Post Component
-// Version: 1.8.0 - Fixed duplicate ID generation and hydration mismatch issues with pre-computed ID mapping
+// Version: 1.8.1 - Improved inline code visibility by changing text color from cyan-400 to cyan-300
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import ReactMarkdown from 'react-markdown'
@@ -257,7 +257,7 @@ const MarkdownPost = ({ content, title, author = 'Jeremy', date = new Date().toL
     // Inline code styling
     code: ({ inline, children, ...props }) =>
       inline ? (
-        <code className="bg-dark-surface/50 text-cyan-400 font-medium px-1.5 py-0.5 rounded text-sm border border-dark-border/50" {...props}>
+        <code className="bg-dark-surface/50 text-cyan-300 font-medium px-1.5 py-0.5 rounded text-sm border border-dark-border/50" {...props}>
           {children}
         </code>
       ) : (
