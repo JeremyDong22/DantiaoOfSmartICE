@@ -257,7 +257,7 @@ const MarkdownPost = ({ content, title, author = 'Jeremy', date = new Date().toL
     // Inline code styling
     code: ({ inline, children, ...props }) =>
       inline ? (
-        <code className="bg-dark-surface text-primary-400 px-1.5 py-0.5 rounded text-sm" {...props}>
+        <code className="bg-dark-surface/50 text-cyan-400 font-medium px-1.5 py-0.5 rounded text-sm border border-dark-border/50" {...props}>
           {children}
         </code>
       ) : (
