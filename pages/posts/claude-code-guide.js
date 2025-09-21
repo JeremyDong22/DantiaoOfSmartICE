@@ -150,7 +150,7 @@ export async function getStaticProps({ locale }) {
       fileName = 'claude-code-guide-zh.md'
     }
 
-    const filePath = path.join(process.cwd(), fileName)
+    const filePath = path.join(process.cwd(), 'public', 'content', fileName)
     const markdownContent = fs.readFileSync(filePath, 'utf8')
 
     return {
