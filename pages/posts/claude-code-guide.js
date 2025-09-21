@@ -150,8 +150,39 @@ export async function getStaticProps({ locale }) {
       fileName = 'claude-code-guide-zh.md'
     }
 
+    // Detailed logging for debugging
+    console.log('=== Markdown Loading Debug Info ===')
+    console.log('Current Working Directory:', process.cwd())
+    console.log('Locale:', locale)
+    console.log('Trying to load file:', fileName)
+
     const filePath = path.join(process.cwd(), 'content', fileName)
+    console.log('Full file path:', filePath)
+
+    // Check if file exists
+    const fileExists = fs.existsSync(filePath)
+    console.log('File exists:', fileExists)
+
+    if (!fileExists) {
+      // List files in content directory
+      const contentDir = path.join(process.cwd(), 'content')
+      console.log('Content directory path:', contentDir)
+
+      if (fs.existsSync(contentDir)) {
+        const files = fs.readdirSync(contentDir)
+        console.log('Files in content directory:', files)
+      } else {
+        console.log('Content directory does not exist!')
+
+        // Try to list root directory files
+        const rootFiles = fs.readdirSync(process.cwd())
+        console.log('Files in root directory:', rootFiles.filter(f => !f.startsWith('.')))
+      }
+    }
+
     const markdownContent = fs.readFileSync(filePath, 'utf8')
+    console.log('Successfully loaded markdown, length:', markdownContent.length)
+    console.log('=== End Debug Info ===')
 
     return {
       props: {
@@ -160,14 +191,19 @@ export async function getStaticProps({ locale }) {
       },
     }
   } catch (error) {
-    // Log error for debugging during build time
-    // eslint-disable-next-line no-console
-    console.error('Error reading markdown file:', error)
+    // Detailed error logging
+    console.error('=== ERROR Loading Markdown ===')
+    console.error('Error type:', error.name)
+    console.error('Error message:', error.message)
+    console.error('Error code:', error.code)
+    console.error('Error path:', error.path)
+    console.error('Full error:', error)
+    console.error('=== End Error Info ===')
 
-    // Provide localized error message
+    // Provide detailed error message
     const errorMessage = locale === 'zh'
-      ? '# 错误\n\n无法加载 Claude Code 指南内容。'
-      : '# Error\n\nCould not load the Claude Code guide content.'
+      ? `# 错误\n\n无法加载 Claude Code 指南内容。\n\n## 错误详情：\n- 错误类型: ${error.name}\n- 错误信息: ${error.message}\n- 错误代码: ${error.code || 'N/A'}\n- 文件路径: ${error.path || 'N/A'}`
+      : `# Error\n\nCould not load the Claude Code guide content.\n\n## Error Details:\n- Error Type: ${error.name}\n- Error Message: ${error.message}\n- Error Code: ${error.code || 'N/A'}\n- File Path: ${error.path || 'N/A'}`
 
     return {
       props: {
