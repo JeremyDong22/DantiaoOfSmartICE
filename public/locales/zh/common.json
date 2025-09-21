@@ -1,0 +1,68 @@
+{
+  "nav": {
+    "home": "首页",
+    "billboard": "公告板",
+    "language": "语言"
+  },
+  "home": {
+    "title": "SMARTICE",
+    "subtitle": "为SMARTICE团队学习和知识分享而设计的平台",
+    "description": "内部学习平台",
+    "welcome": "欢迎来到 SMARTICE 内部学习平台",
+    "intro": "这是一个专为团队学习和知识分享而设计的平台。",
+    "features": {
+      "title": "平台特色",
+      "learning": "学习资源",
+      "learningDesc": "丰富的学习材料和课程",
+      "sharing": "知识分享",
+      "sharingDesc": "团队成员间的经验交流",
+      "collaboration": "协作学习",
+      "collaborationDesc": "共同成长，互相促进"
+    },
+    "getStarted": "开始学习"
+  },
+  "billboard": {
+    "title": "公告板",
+    "subtitle": "最新动态和重要通知",
+    "noContent": "暂无内容",
+    "lastUpdated": "最后更新",
+    "featured": "推荐",
+    "moreContentSoon": "更多内容即将推出",
+    "comingContentDescription": "本页面将展示重要公告、学习资源和团队更新。",
+    "comingSoonMessage": "更多内容即将上线，敬请期待",
+    "backToHome": "返回首页",
+    "subscribeUpdates": "订阅更新"
+  },
+  "footer": {
+    "company": "SMARTICE",
+    "website": "smartice.ai",
+    "allRightsReserved": "版权所有"
+  },
+  "post": {
+    "author": "作者",
+    "date": "日期",
+    "readingTime": "阅读时长",
+    "minutes": "分钟",
+    "tableOfContents": "目录",
+    "copyCode": "复制",
+    "backToBillboard": "返回公告板",
+    "share": "分享",
+    "print": "打印",
+    "publishedBy": "发布者",
+    "lastUpdated": "最后更新",
+    "helpful": "有帮助吗？",
+    "scrollToTop": "回到顶部",
+    "viewPost": "查看文章",
+    "claudeCodeGuide": {
+      "title": "Claude Code 完整安装指南",
+      "description": "关于安装和设置 Claude Code 的全面指南 - 你的AI编程助手。",
+      "summary": "通过这个全面的指南学习如何安装和设置 Claude Code，涵盖网页版、桌面版和命令行安装方法。"
+    }
+  },
+  "category": {
+    "guide": "指南",
+    "tutorial": "教程",
+    "announcement": "公告",
+    "update": "更新"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "name": "SmartICE Internal Learning Platform",
+  "short_name": "SmartICE",
+  "description": "Internal learning and knowledge sharing platform for SmartICE team",
+  "theme_color": "#2563eb",
+  "background_color": "#0f172a",
+  "display": "standalone",
+  "orientation": "portrait",
+  "scope": "/",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "/favicon-16x16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}

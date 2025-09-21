@@ -1,0 +1,150 @@
+# SmartICE Vercel Deployment Ignore File
+# Version: 1.0.0 - Files and directories to exclude from Vercel deployment
+
+# =============================================================================
+# DEVELOPMENT FILES
+# =============================================================================
+
+# Development environment files
+.env.local
+.env.development
+.env.development.local
+
+# Development tools
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# =============================================================================
+# BUILD & CACHE DIRECTORIES
+# =============================================================================
+
+# Next.js build cache (handled automatically by Vercel)
+.next/
+out/
+
+# Node modules (handled automatically)
+node_modules/
+
+# Package manager cache
+.npm/
+.yarn/
+yarn-error.log
+.pnpm-debug.log*
+
+# =============================================================================
+# DOCUMENTATION & GUIDES
+# =============================================================================
+
+# Internal documentation
+claude-code-guide.md
+README.md
+*.md
+
+# Setup scripts
+setup.sh
+scripts/
+
+# =============================================================================
+# TESTING & COVERAGE
+# =============================================================================
+
+# Test files and coverage
+__tests__/
+*.test.js
+*.test.jsx
+*.test.ts
+*.test.tsx
+*.spec.js
+*.spec.jsx
+*.spec.ts
+*.spec.tsx
+coverage/
+.nyc_output/
+jest-coverage/
+
+# =============================================================================
+# SOURCE CONTROL
+# =============================================================================
+
+# Git files
+.git/
+.gitignore
+.gitattributes
+
+# =============================================================================
+# LOGS & TEMPORARY FILES
+# =============================================================================
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Temporary files
+*.tmp
+*.temp
+.temp/
+.tmp/
+
+# =============================================================================
+# EDITOR & IDE FILES
+# =============================================================================
+
+# Editor backup files
+*~
+*.bak
+*.orig
+*.rej
+
+# Sublime Text
+*.sublime-workspace
+*.sublime-project
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+
+# =============================================================================
+# MISC
+# =============================================================================
+
+# Storybook build
+storybook-static/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# ESLint cache
+.eslintcache
+
+# Prettier cache
+.prettiercache
+
+# Cypress
+cypress/videos/
+cypress/screenshots/
+
+# Percy
+.percy/

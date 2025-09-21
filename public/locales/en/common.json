@@ -1,0 +1,68 @@
+{
+  "nav": {
+    "home": "Home",
+    "billboard": "Billboard",
+    "language": "Language"
+  },
+  "home": {
+    "title": "SMARTICE",
+    "subtitle": "Challenge Accepted",
+    "description": "Internal Learning Platform",
+    "welcome": "Welcome to SMARTICE Internal Learning Platform",
+    "intro": "A platform designed for team learning and knowledge sharing.",
+    "features": {
+      "title": "Platform Features",
+      "learning": "Learning Resources",
+      "learningDesc": "Rich learning materials and courses",
+      "sharing": "Knowledge Sharing",
+      "sharingDesc": "Experience exchange among team members",
+      "collaboration": "Collaborative Learning",
+      "collaborationDesc": "Growing together, promoting each other"
+    },
+    "getStarted": "Get Started"
+  },
+  "billboard": {
+    "title": "Billboard",
+    "subtitle": "Latest Updates and Important Notices",
+    "noContent": "No content yet",
+    "lastUpdated": "Last Updated",
+    "featured": "Featured",
+    "moreContentSoon": "More content coming soon!",
+    "comingContentDescription": "This page will feature important announcements, learning resources, and team updates.",
+    "comingSoonMessage": "Content coming online soon, stay tuned...",
+    "backToHome": "Back to Home",
+    "subscribeUpdates": "Subscribe for Updates"
+  },
+  "footer": {
+    "company": "SMARTICE",
+    "website": "smartice.ai",
+    "allRightsReserved": "All Rights Reserved"
+  },
+  "post": {
+    "author": "Author",
+    "date": "Date",
+    "readingTime": "Reading time",
+    "minutes": "min",
+    "tableOfContents": "Table of Contents",
+    "copyCode": "Copy",
+    "backToBillboard": "Back to Billboard",
+    "share": "Share",
+    "print": "Print",
+    "publishedBy": "Published by",
+    "lastUpdated": "Last updated",
+    "helpful": "Helpful?",
+    "scrollToTop": "Scroll to top",
+    "viewPost": "View Post",
+    "claudeCodeGuide": {
+      "title": "The Complete N00b's Guide to Installing Claude Code",
+      "description": "A comprehensive guide for installing and setting up Claude Code - your AI coding companion.",
+      "summary": "Learn how to install and set up Claude Code with this comprehensive guide covering web app, desktop app, and CLI installation methods."
+    }
+  },
+  "category": {
+    "guide": "Guide",
+    "tutorial": "Tutorial",
+    "announcement": "Announcement",
+    "update": "Update"
+  }
+}

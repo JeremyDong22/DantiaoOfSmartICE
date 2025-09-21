@@ -1,0 +1,126 @@
+/* SmartICE Global Styles */
+/* Version: 1.2.0 - Enhanced dark theme with improved mobile responsiveness for content pages */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Dark theme by default */
+:root {
+  color-scheme: dark;
+}
+
+html {
+  /* Dark mode styling handled by the dark class on body */
+}
+
+body {
+  @apply bg-dark-bg text-dark-text font-sans antialiased;
+  @apply min-h-screen;
+}
+
+/* Custom scrollbar for dark theme */
+::-webkit-scrollbar {
+  @apply w-2;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-dark-surface;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-dark-border rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-500;
+}
+
+/* Smooth transitions for better UX */
+* {
+  @apply transition-colors duration-200;
+}
+
+/* Custom component classes */
+.btn-primary {
+  @apply px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium;
+  @apply transition-all duration-200 transform hover:scale-105;
+}
+
+.btn-secondary {
+  @apply px-6 py-3 bg-dark-surface hover:bg-dark-border text-dark-text rounded-lg font-medium;
+  @apply border border-dark-border transition-all duration-200;
+}
+
+.card {
+  @apply bg-dark-surface border border-dark-border rounded-xl p-6;
+  @apply shadow-lg backdrop-blur-sm;
+}
+
+.nav-link {
+  @apply text-dark-muted hover:text-dark-text transition-colors duration-200;
+  @apply font-medium;
+}
+
+.nav-link.active {
+  @apply text-primary-500;
+}
+
+/* Mobile touch optimizations and content layout fixes */
+@media (max-width: 768px) {
+  .btn-primary, .btn-secondary {
+    @apply min-h-[44px] px-4 py-3 text-sm;
+  }
+
+  .nav-link {
+    @apply min-h-[44px] flex items-center;
+  }
+
+  /* Mobile typography improvements */
+  h1 {
+    @apply text-2xl sm:text-3xl;
+  }
+
+  h2 {
+    @apply text-xl sm:text-2xl;
+  }
+
+  h3 {
+    @apply text-lg sm:text-xl;
+  }
+
+  /* Mobile content spacing */
+  .prose p {
+    @apply text-sm leading-relaxed;
+  }
+
+  .prose pre {
+    @apply text-xs overflow-x-auto;
+  }
+
+  /* Mobile TOC improvements */
+  .mobile-toc {
+    @apply max-h-48 overflow-y-auto;
+  }
+}
+
+/* Focus styles for accessibility */
+*:focus {
+  @apply outline-none ring-2 ring-primary-500 ring-offset-2 ring-offset-dark-bg;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High contrast support */
+@media (prefers-contrast: high) {
+  .card {
+    @apply border-2 border-dark-text;
+  }
+}
