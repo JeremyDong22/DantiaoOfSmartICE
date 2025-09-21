@@ -2,6 +2,7 @@
 // Version: 1.1.0 - Enhanced Next.js setup with performance optimizations
 
 const { i18n } = require('./next-i18next.config')
+const path = require('path')
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -61,23 +62,39 @@ const nextConfig = {
   experimental: {
     optimizeCss: true,
     scrollRestoration: true,
+    outputFileTracingRoot: path.join(__dirname),
+    outputFileTracingIncludes: {
+      '/posts/claude-code-guide': ['./content/**'],
+      '/api/content': ['./content/**'],
+    },
   },
+
   // Explicitly include markdown files for Vercel deployment
   outputFileTracingIncludes: {
-    '/posts/*': ['./content/**/*.md'],
-    '/posts/claude-code-guide': ['./content/**/*.md'],
-    '/api/*': ['./content/**/*.md'],
-    '/*': ['./content/**/*.md']
+    '/posts/claude-code-guide': ['./content/**/*'],
+    '/api/content': ['./content/**/*'],
   },
-  // Bundle analyzer for development
-  ...(process.env.ANALYZE === 'true' && {
-    webpack: (config) => {
+
+  // Webpack configuration
+  webpack: (config, { isServer }) => {
+    // Bundle analyzer in dev
+    if (process.env.ANALYZE === 'true') {
       config.optimization.providedExports = true
       config.optimization.usedExports = true
       config.optimization.sideEffects = false
-      return config
     }
-  })
+
+    // Ensure markdown files are handled correctly
+    if (isServer) {
+      // Keep fs module available on server
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+      }
+    }
+
+    return config
+  }
 }
 
 module.exports = nextConfig

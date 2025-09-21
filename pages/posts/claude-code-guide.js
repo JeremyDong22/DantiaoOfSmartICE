@@ -166,80 +166,153 @@ const ClaudeCodeGuidePage = ({ markdownContent, fallbackMode }) => {
 }
 
 export async function getStaticProps({ locale }) {
+  // ULTRA VERBOSE LOGGING FOR VERCEL DEBUGGING
+  console.log('=== VERCEL BUILD DEBUG START ===')
+  console.log('Build Time:', new Date().toISOString())
+  console.log('process.cwd():', process.cwd())
+  console.log('__dirname would be:', __dirname || 'undefined')
+  console.log('process.env.PWD:', process.env.PWD)
+  console.log('process.env.VERCEL:', process.env.VERCEL)
+  console.log('process.env.VERCEL_ENV:', process.env.VERCEL_ENV)
+  console.log('process.env.VERCEL_URL:', process.env.VERCEL_URL)
+  console.log('process.env.NODE_ENV:', process.env.NODE_ENV)
+  console.log('Locale requested:', locale)
+
   try {
-    // Choose the appropriate markdown file based on locale
-    let fileName = 'claude-code-guide.md' // Default to English
-    if (locale === 'zh') {
-      fileName = 'claude-code-guide-zh.md'
+    // Choose file based on locale
+    const fileName = locale === 'zh' ? 'claude-code-guide-zh.md' : 'claude-code-guide.md'
+    console.log('Target file:', fileName)
+
+    // CRITICAL: Use process.cwd() for Vercel compatibility
+    const baseDir = process.cwd()
+    console.log('Base directory:', baseDir)
+
+    // List ALL files and directories at root level
+    console.log('\n=== ROOT DIRECTORY STRUCTURE ===')
+    try {
+      const rootItems = fs.readdirSync(baseDir)
+      console.log('Root items count:', rootItems.length)
+      rootItems.forEach((item, index) => {
+        const itemPath = path.join(baseDir, item)
+        try {
+          const stats = fs.statSync(itemPath)
+          console.log(`[${index}] ${item} (${stats.isDirectory() ? 'DIR' : 'FILE'}, ${stats.size} bytes)`)
+        } catch (e) {
+          console.log(`[${index}] ${item} (ERROR: ${e.message})`)
+        }
+      })
+    } catch (e) {
+      console.error('Failed to list root directory:', e.message)
     }
 
-    // Detailed logging for debugging
-    console.log('=== Markdown Loading Debug Info ===')
-    console.log('Current Working Directory:', process.cwd())
-    console.log('Node Environment:', process.env.NODE_ENV)
-    console.log('Vercel Environment:', process.env.VERCEL)
-    console.log('Locale:', locale)
-    console.log('Trying to load file:', fileName)
+    // Check for content directory
+    console.log('\n=== CONTENT DIRECTORY CHECK ===')
+    const contentDir = path.join(baseDir, 'content')
+    console.log('Content dir path:', contentDir)
+    console.log('Content dir exists:', fs.existsSync(contentDir))
 
-    // Try multiple possible paths
-    const possiblePaths = [
-      path.join(process.cwd(), 'content', fileName),
-      path.join(process.cwd(), 'public', 'content', fileName),
-      path.join(process.cwd(), fileName),
+    if (fs.existsSync(contentDir)) {
+      try {
+        const contentItems = fs.readdirSync(contentDir)
+        console.log('Content items count:', contentItems.length)
+        contentItems.forEach((item, index) => {
+          const itemPath = path.join(contentDir, item)
+          try {
+            const stats = fs.statSync(itemPath)
+            console.log(`[${index}] ${item} (${stats.isDirectory() ? 'DIR' : 'FILE'}, ${stats.size} bytes)`)
+          } catch (e) {
+            console.log(`[${index}] ${item} (ERROR: ${e.message})`)
+          }
+        })
+      } catch (e) {
+        console.error('Failed to list content directory:', e.message)
+      }
+    }
+
+    // Check for markdown files at root
+    console.log('\n=== MARKDOWN FILES AT ROOT ===')
+    const rootMdPath = path.join(baseDir, fileName)
+    console.log('Root MD path:', rootMdPath)
+    console.log('Root MD exists:', fs.existsSync(rootMdPath))
+
+    // Build list of paths to try
+    const pathsToTry = [
+      { path: path.join(baseDir, 'content', fileName), label: 'content/' + fileName },
+      { path: path.join(baseDir, fileName), label: 'root/' + fileName },
+      { path: path.join(baseDir, 'public', 'content', fileName), label: 'public/content/' + fileName },
+      { path: path.join(baseDir, 'public', fileName), label: 'public/' + fileName },
     ]
 
-    console.log('Trying paths:', possiblePaths)
-
-    let filePath = null
+    console.log('\n=== ATTEMPTING TO READ FILE ===')
     let markdownContent = null
+    let successPath = null
 
-    for (const tryPath of possiblePaths) {
-      console.log(`Checking path: ${tryPath}`)
-      if (fs.existsSync(tryPath)) {
-        console.log(`✅ Found file at: ${tryPath}`)
-        filePath = tryPath
-        markdownContent = fs.readFileSync(tryPath, 'utf8')
-        break
-      } else {
-        console.log(`❌ Not found at: ${tryPath}`)
-      }
-    }
+    for (const attempt of pathsToTry) {
+      console.log(`\nTrying: ${attempt.label}`)
+      console.log(`Full path: ${attempt.path}`)
 
-    if (!filePath || !markdownContent) {
-      // List what files ARE available for debugging
-      console.log('File not found! Listing available directories:')
       try {
-        const rootFiles = fs.readdirSync(process.cwd())
-        console.log('Root directory files:', rootFiles.filter(f => !f.startsWith('.')))
+        if (fs.existsSync(attempt.path)) {
+          console.log('✅ File exists!')
+          const stats = fs.statSync(attempt.path)
+          console.log(`File size: ${stats.size} bytes`)
+          console.log(`File modified: ${stats.mtime}`)
 
-        // Check if there's a content folder
-        const contentPath = path.join(process.cwd(), 'content')
-        if (fs.existsSync(contentPath)) {
-          const contentFiles = fs.readdirSync(contentPath)
-          console.log('Content directory exists with files:', contentFiles)
+          markdownContent = fs.readFileSync(attempt.path, 'utf8')
+          console.log(`✅ Successfully read ${markdownContent.length} characters`)
+          console.log(`First 100 chars: ${markdownContent.substring(0, 100)}...`)
+          successPath = attempt.path
+          break
+        } else {
+          console.log('❌ File does not exist at this path')
         }
+      } catch (readError) {
+        console.error(`❌ Error reading file: ${readError.message}`)
+        console.error(`Error code: ${readError.code}`)
+      }
+    }
 
-        // Check if there's a public folder
-        const publicPath = path.join(process.cwd(), 'public')
-        if (fs.existsSync(publicPath)) {
-          const publicFiles = fs.readdirSync(publicPath)
-          console.log('Public directory exists with subdirs:', publicFiles)
+    if (!markdownContent) {
+      console.log('\n=== FAILED TO FIND MARKDOWN FILE ===')
+      console.log('None of the paths worked!')
 
-          // Check public/content
-          const publicContentPath = path.join(publicPath, 'content')
-          if (fs.existsSync(publicContentPath)) {
-            const publicContentFiles = fs.readdirSync(publicContentPath)
-            console.log('Public/content exists with files:', publicContentFiles)
+      // One more desperate attempt - check if files are in weird places
+      console.log('\n=== DESPERATE SEARCH FOR .md FILES ===')
+      function findMarkdownFiles(dir, depth = 0, maxDepth = 3) {
+        if (depth > maxDepth) return []
+        let mdFiles = []
+        try {
+          const items = fs.readdirSync(dir)
+          for (const item of items) {
+            if (item.startsWith('.') || item === 'node_modules') continue
+            const fullPath = path.join(dir, item)
+            try {
+              const stats = fs.statSync(fullPath)
+              if (stats.isFile() && item.endsWith('.md')) {
+                mdFiles.push(fullPath)
+              } else if (stats.isDirectory()) {
+                mdFiles = mdFiles.concat(findMarkdownFiles(fullPath, depth + 1, maxDepth))
+              }
+            } catch (e) {
+              // Skip inaccessible items
+            }
           }
+        } catch (e) {
+          // Skip inaccessible directories
         }
-      } catch (listError) {
-        console.error('Error listing directories:', listError)
+        return mdFiles
       }
 
-      throw new Error(`File not found in any of the expected locations: ${possiblePaths.join(', ')}`)
+      const allMdFiles = findMarkdownFiles(baseDir)
+      console.log('Found .md files:', allMdFiles)
+
+      throw new Error(`Could not find ${fileName} in any expected location. Searched: ${pathsToTry.map(p => p.label).join(', ')}`)
     }
-    console.log('Successfully loaded markdown, length:', markdownContent.length)
-    console.log('=== End Debug Info ===')
+
+    console.log('\n=== SUCCESS ===')
+    console.log('File loaded from:', successPath)
+    console.log('Content length:', markdownContent.length)
+    console.log('=== VERCEL BUILD DEBUG END ===\n')
 
     return {
       props: {
@@ -249,25 +322,42 @@ export async function getStaticProps({ locale }) {
       },
     }
   } catch (error) {
-    // Detailed error logging
-    console.error('=== ERROR Loading Markdown ===')
-    console.error('Error type:', error.name)
+    console.error('\n=== CRITICAL ERROR ===')
+    console.error('Error name:', error.name)
     console.error('Error message:', error.message)
-    console.error('Error code:', error.code)
-    console.error('Error path:', error.path)
-    console.error('Full error:', error)
-    console.error('=== End Error Info ===')
+    console.error('Error stack:', error.stack)
+    console.error('=== END CRITICAL ERROR ===\n')
 
-    // Provide detailed error message
+    // Fallback content with detailed error info
     const errorMessage = locale === 'zh'
-      ? `# 错误\n\n无法加载 Claude Code 指南内容。\n\n## 错误详情：\n- 错误类型: ${error.name}\n- 错误信息: ${error.message}\n- 错误代码: ${error.code || 'N/A'}\n- 文件路径: ${error.path || 'N/A'}`
-      : `# Error\n\nCould not load the Claude Code guide content.\n\n## Error Details:\n- Error Type: ${error.name}\n- Error Message: ${error.message}\n- Error Code: ${error.code || 'N/A'}\n- File Path: ${error.path || 'N/A'}`
+      ? `# 错误：无法加载内容
+
+## 调试信息
+- 工作目录: ${process.cwd()}
+- 错误类型: ${error.name}
+- 错误信息: ${error.message}
+- Vercel环境: ${process.env.VERCEL || 'false'}
+- Node环境: ${process.env.NODE_ENV}
+
+## 临时解决方案
+内容将通过 API 加载...`
+      : `# Error: Could not load content
+
+## Debug Info
+- Working Directory: ${process.cwd()}
+- Error Type: ${error.name}
+- Error Message: ${error.message}
+- Vercel Environment: ${process.env.VERCEL || 'false'}
+- Node Environment: ${process.env.NODE_ENV}
+
+## Fallback
+Content will be loaded via API...`
 
     return {
       props: {
         ...(await serverSideTranslations(locale, ['common'])),
         markdownContent: errorMessage,
-        fallbackMode: true, // Enable API fallback when build fails
+        fallbackMode: true,
       },
     }
   }

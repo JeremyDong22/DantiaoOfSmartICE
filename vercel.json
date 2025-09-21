@@ -1,7 +1,18 @@
 {
   "functions": {
+    "pages/posts/claude-code-guide.js": {
+      "includeFiles": "content/**"
+    },
     "pages/posts/*.js": {
       "includeFiles": "content/**"
+    },
+    "pages/api/content.js": {
+      "includeFiles": "content/**"
+    }
+  },
+  "build": {
+    "env": {
+      "DEBUG": "true"
     }
   }
 }
