@@ -5,8 +5,9 @@
     "language": "语言"
   },
   "home": {
-    "title": "SMARTICE",
-    "welcome": "欢迎来到 SMARTICE 内部学习平台",
+    "title": "SMARTICE.AI",
+    "welcome": "欢迎来到 SMARTICE.AI 内部学习平台",
+    "tagline": "授人以鱼，不如授人以渔。打造AI+场景的专精超级个体。",
     "features": {
       "title": "平台特色",
       "learning": "学习资源",
@@ -21,7 +22,7 @@
       "description": "专为团队学习和知识分享而设计的平台",
       "chineseDescription": "为SMARTICE团队学习和知识分享而设计的平台"
     },
-    "getStarted": "开始学习"
+    "getStarted": "开始Solo"
   },
   "billboard": {
     "title": "公告板",
@@ -36,7 +37,7 @@
     "subscribeUpdates": "订阅更新"
   },
   "footer": {
-    "company": "SMARTICE",
+    "company": "SMARTICE.AI",
     "website": "smartice.ai",
     "allRightsReserved": "版权所有"
   },

@@ -80,7 +80,7 @@ const MarkdownPost = ({ content, title, author = 'Jeremy', date = new Date().toL
         }, 100)
       },
       {
-        rootMargin: '-120px 0px -75% 0px',
+        rootMargin: '-160px 0px -70% 0px',
         threshold: [0, 0.1, 0.3, 0.7, 1.0]
       }
     )
@@ -383,30 +383,32 @@ const MarkdownPost = ({ content, title, author = 'Jeremy', date = new Date().toL
   return (
     <div className="w-full">
       {/* Article Header */}
-      <header className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
-        <h1 className="text-4xl md:text-5xl font-bold text-dark-text mb-4">
-          {title}
-        </h1>
-        <div className="flex flex-wrap items-center gap-4 text-dark-muted">
-          <span>
-            {t('post.author')}: {author}
-          </span>
-          <span>•</span>
-          <span>
-            {t('post.date')}: {date}
-          </span>
-          <span>•</span>
-          <span>
-            {t('post.readingTime')}: {readingTime} {t('post.minutes')}
-          </span>
+      <header className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+        <div className="max-w-4xl">
+          <h1 className="text-4xl md:text-5xl font-bold text-dark-text mb-4">
+            {title}
+          </h1>
+          <div className="flex flex-wrap items-center gap-4 text-dark-muted">
+            <span>
+              {t('post.author')}: {author}
+            </span>
+            <span>•</span>
+            <span>
+              {t('post.date')}: {date}
+            </span>
+            <span>•</span>
+            <span>
+              {t('post.readingTime')}: {readingTime} {t('post.minutes')}
+            </span>
+          </div>
         </div>
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col lg:flex-row gap-6">
+        <div className="flex flex-col lg:flex-row lg:gap-12 gap-6">
           {/* Table of Contents */}
           {tableOfContents.length > 0 && (
-            <aside className="lg:w-80 lg:flex-shrink-0 mb-6 lg:mb-0">
+            <aside className="lg:w-72 lg:flex-shrink-0 mb-6 lg:mb-0">
               {/* Mobile TOC - Collapsible */}
               <div className="lg:hidden bg-dark-surface border border-dark-border rounded-xl p-4 mb-6">
                 <h3 className="text-base font-semibold text-dark-text mb-3">
@@ -439,12 +441,12 @@ const MarkdownPost = ({ content, title, author = 'Jeremy', date = new Date().toL
 
               {/* Desktop TOC - Fixed and Scrollable with Gradient Border */}
               <div className="hidden lg:block toc-desktop-container">
-                <div className="toc-gradient-border shadow-2xl">
-                  <div className="p-6">
-                    <h3 className="text-lg font-semibold text-dark-text mb-4 sticky top-0 bg-dark-surface pb-2 border-b border-dark-border">
+                <div className="toc-gradient-border shadow-xl h-full overflow-hidden">
+                  <div className="p-5 h-full flex flex-col">
+                    <h3 className="text-base font-semibold text-dark-text mb-3 pb-2 border-b border-dark-border flex-shrink-0">
                       {t('post.tableOfContents')}
                     </h3>
-                    <nav className="overflow-y-auto max-h-[calc(100vh-14rem)] pr-2 custom-scrollbar">
+                    <nav className="overflow-y-auto overflow-x-hidden flex-1 pr-2 custom-scrollbar">
                       <ul className="space-y-0.5">
                         {tableOfContents.map((item, index) => {
                           const isActive = activeSection === item.id
@@ -474,8 +476,8 @@ const MarkdownPost = ({ content, title, author = 'Jeremy', date = new Date().toL
           )}
 
           {/* Main Content */}
-          <main className="flex-1 min-w-0 toc-main-content">
-            <article className="prose prose-lg max-w-none">
+          <main className="flex-1 min-w-0">
+            <article className="prose prose-lg max-w-4xl">
               <ReactMarkdown
                 components={components}
                 remarkPlugins={[remarkGfm, remarkBreaks]}

@@ -1,5 +1,5 @@
 /* SmartICE Global Styles */
-/* Version: 1.5.0 - Fixed TOC layout positioning, added gradient borders, improved content width, and enhanced scroll behavior */
+/* Version: 1.6.0 - Added full-screen hero section with responsive design, animations, and perfect viewport integration with footer */
 
 @tailwind base;
 @tailwind components;
@@ -47,9 +47,87 @@ body {
   @apply transition-all duration-200 transform hover:scale-105;
 }
 
+.btn-large {
+  @apply px-8 py-4 text-lg font-semibold;
+}
+
 .btn-secondary {
   @apply px-6 py-3 bg-dark-surface hover:bg-dark-border text-dark-text rounded-lg font-medium;
   @apply border border-dark-border transition-all duration-200;
+}
+
+/* Full-screen hero section styles */
+.hero-fullscreen {
+  @apply flex items-center justify-center px-4 sm:px-6 lg:px-8;
+  @apply bg-gradient-to-br from-dark-bg via-dark-surface to-dark-bg;
+  /* Calculate height: full viewport minus navigation (64px) */
+  height: calc(100vh - 64px);
+  background-image:
+    radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(37, 99, 235, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 80%, rgba(29, 78, 216, 0.08) 0%, transparent 50%);
+}
+
+.hero-content {
+  @apply max-w-5xl mx-auto text-center;
+  @apply w-full;
+  animation: heroFadeIn 1.2s ease-out;
+}
+
+.hero-logo {
+  @apply mb-12 sm:mb-16;
+  animation: heroSlideUp 0.8s ease-out 0.2s both;
+}
+
+.hero-title {
+  @apply text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl;
+  @apply font-bold text-dark-text mb-6 sm:mb-8;
+  @apply leading-tight;
+  background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 50%, #cbd5e1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: heroSlideUp 0.8s ease-out 0.4s both;
+}
+
+.hero-description {
+  @apply text-lg sm:text-xl lg:text-2xl text-dark-muted;
+  @apply mb-4 sm:mb-6 max-w-3xl mx-auto;
+  @apply leading-relaxed;
+  animation: heroSlideUp 0.8s ease-out 0.6s both;
+}
+
+.hero-tagline {
+  @apply text-base sm:text-lg lg:text-xl text-primary-400;
+  @apply mb-8 sm:mb-12 lg:mb-16 max-w-2xl mx-auto;
+  @apply font-medium leading-relaxed;
+  animation: heroSlideUp 0.8s ease-out 0.8s both;
+}
+
+.hero-cta {
+  @apply flex justify-center;
+  animation: heroSlideUp 0.8s ease-out 1s both;
+}
+
+/* Hero animations */
+@keyframes heroFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes heroSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .card {
@@ -72,8 +150,39 @@ body {
     @apply min-h-[44px] px-4 py-3 text-sm;
   }
 
+  .btn-large {
+    @apply px-6 py-3 text-base min-h-[48px];
+  }
+
   .nav-link {
     @apply min-h-[44px] flex items-center;
+  }
+
+  /* Mobile hero section adjustments */
+  .hero-fullscreen {
+    @apply px-4;
+    /* Full viewport height minus mobile navigation */
+    height: calc(100vh - 64px);
+  }
+
+  .hero-content {
+    @apply py-8;
+  }
+
+  .hero-logo {
+    @apply mb-8;
+  }
+
+  .hero-title {
+    @apply text-3xl leading-tight;
+  }
+
+  .hero-description {
+    @apply text-base leading-relaxed mb-4;
+  }
+
+  .hero-tagline {
+    @apply text-sm leading-relaxed mb-8;
   }
 
   /* Mobile typography improvements */
@@ -234,6 +343,17 @@ html {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+
+  .hero-content,
+  .hero-logo,
+  .hero-title,
+  .hero-description,
+  .hero-tagline,
+  .hero-cta {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }
 
 /* High contrast support */
@@ -247,23 +367,23 @@ html {
 .toc-gradient-border {
   position: relative;
   background: linear-gradient(135deg,
-    rgba(59, 130, 246, 0.1),
-    rgba(37, 99, 235, 0.15),
-    rgba(29, 78, 216, 0.1)
+    rgba(59, 130, 246, 0.08),
+    rgba(37, 99, 235, 0.12),
+    rgba(29, 78, 216, 0.08)
   );
   border-radius: 0.75rem;
-  padding: 2px;
+  padding: 1px;
 }
 
 .toc-gradient-border::before {
   content: '';
   position: absolute;
   inset: 0;
-  padding: 2px;
+  padding: 1px;
   background: linear-gradient(135deg,
-    rgba(59, 130, 246, 0.4),
-    rgba(37, 99, 235, 0.6),
-    rgba(29, 78, 216, 0.4)
+    rgba(59, 130, 246, 0.3),
+    rgba(37, 99, 235, 0.4),
+    rgba(29, 78, 216, 0.3)
   );
   border-radius: inherit;
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
@@ -274,7 +394,7 @@ html {
 
 .toc-gradient-border > div {
   background: theme('colors.dark.surface');
-  border-radius: calc(0.75rem - 2px);
+  border-radius: calc(0.75rem - 1px);
   position: relative;
   z-index: 1;
 }
@@ -282,16 +402,17 @@ html {
 /* Enhanced desktop TOC positioning for better layout */
 @media (min-width: 1024px) {
   .toc-desktop-container {
-    position: fixed;
-    left: 1.5rem;
-    top: 8rem;
-    width: 20rem;
-    max-height: calc(100vh - 10rem);
-    z-index: 20;
+    position: sticky;
+    top: 5rem; /* Reduced from 6rem for better positioning */
+    align-self: flex-start;
+    height: calc(100vh - 7rem); /* Optimized height: viewport - nav - minimal bottom space */
+    max-height: calc(100vh - 7rem);
+    display: flex;
+    flex-direction: column;
   }
 
   .toc-main-content {
-    margin-left: 24rem;
+    /* No margin needed with flexbox layout */
   }
 }
 

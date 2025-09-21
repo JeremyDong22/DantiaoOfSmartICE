@@ -5,8 +5,9 @@
     "language": "Language"
   },
   "home": {
-    "title": "SMARTICE",
-    "welcome": "Welcome to SMARTICE Internal Learning Platform",
+    "title": "SMARTICE.AI",
+    "welcome": "Welcome to SMARTICE.AI Internal Learning Platform",
+    "tagline": "Teach a man to fish, and you feed him for a lifetime. Building AI+ scenario-specific super individuals.",
     "features": {
       "title": "Platform Features",
       "learning": "Learning Resources",
@@ -21,7 +22,7 @@
       "description": "A platform designed for team learning and knowledge sharing",
       "chineseDescription": "为SMARTICE团队学习和知识分享而设计的平台"
     },
-    "getStarted": "Get Started"
+    "getStarted": "Start Solo"
   },
   "billboard": {
     "title": "Billboard",
@@ -36,7 +37,7 @@
     "subscribeUpdates": "Subscribe for Updates"
   },
   "footer": {
-    "company": "SMARTICE",
+    "company": "SMARTICE.AI",
     "website": "smartice.ai",
     "allRightsReserved": "All Rights Reserved"
   },
