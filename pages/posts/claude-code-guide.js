@@ -185,8 +185,33 @@ export async function getStaticProps({ locale }) {
     if (!filePath || !markdownContent) {
       // List what files ARE available for debugging
       console.log('File not found! Listing available directories:')
-      const rootFiles = fs.readdirSync(process.cwd())
-      console.log('Root directory files:', rootFiles.filter(f => !f.startsWith('.')))
+      try {
+        const rootFiles = fs.readdirSync(process.cwd())
+        console.log('Root directory files:', rootFiles.filter(f => !f.startsWith('.')))
+
+        // Check if there's a content folder
+        const contentPath = path.join(process.cwd(), 'content')
+        if (fs.existsSync(contentPath)) {
+          const contentFiles = fs.readdirSync(contentPath)
+          console.log('Content directory exists with files:', contentFiles)
+        }
+
+        // Check if there's a public folder
+        const publicPath = path.join(process.cwd(), 'public')
+        if (fs.existsSync(publicPath)) {
+          const publicFiles = fs.readdirSync(publicPath)
+          console.log('Public directory exists with subdirs:', publicFiles)
+
+          // Check public/content
+          const publicContentPath = path.join(publicPath, 'content')
+          if (fs.existsSync(publicContentPath)) {
+            const publicContentFiles = fs.readdirSync(publicContentPath)
+            console.log('Public/content exists with files:', publicContentFiles)
+          }
+        }
+      } catch (listError) {
+        console.error('Error listing directories:', listError)
+      }
 
       throw new Error(`File not found in any of the expected locations: ${possiblePaths.join(', ')}`)
     }
