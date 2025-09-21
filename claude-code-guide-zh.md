@@ -147,13 +147,10 @@
 
 #### CLI快速开始
 ```bash
-# 开始编程会话
 claude-code chat
 
-# 帮助分析特定文件
 claude-code analyze myfile.js
 
-# 获取帮助
 claude-code --help
 ```
 

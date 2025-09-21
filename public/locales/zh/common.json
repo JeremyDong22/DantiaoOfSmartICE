@@ -6,10 +6,7 @@
   },
   "home": {
     "title": "SMARTICE",
-    "subtitle": "为SMARTICE团队学习和知识分享而设计的平台",
-    "description": "内部学习平台",
     "welcome": "欢迎来到 SMARTICE 内部学习平台",
-    "intro": "这是一个专为团队学习和知识分享而设计的平台。",
     "features": {
       "title": "平台特色",
       "learning": "学习资源",
@@ -18,6 +15,11 @@
       "sharingDesc": "团队成员间的经验交流",
       "collaboration": "协作学习",
       "collaborationDesc": "共同成长，互相促进"
+    },
+    "platform": {
+      "title": "内部学习平台",
+      "description": "专为团队学习和知识分享而设计的平台",
+      "chineseDescription": "为SMARTICE团队学习和知识分享而设计的平台"
     },
     "getStarted": "开始学习"
   },

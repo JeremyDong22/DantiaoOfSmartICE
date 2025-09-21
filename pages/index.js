@@ -1,5 +1,5 @@
 // SMARTICE Landing Page
-// Version: 1.1.0 - Main homepage with company introduction and features, updated branding
+// Version: 1.2.0 - Fixed subtitle placement: removed Chinese subtitle from hero section and moved to bottom platform description section
 
 import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
@@ -42,8 +42,8 @@ const HomePage = () => {
   return (
     <>
       <Head>
-        <title>{t('home.title')} - {t('home.description')}</title>
-        <meta name="description" content={t('home.intro')} />
+        <title>{t('home.title')} - {t('home.platform.title')}</title>
+        <meta name="description" content={t('home.platform.description')} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -63,10 +63,6 @@ const HomePage = () => {
             {t('home.title')}
           </h1>
 
-          {/* Subtitle */}
-          <h2 className="text-2xl md:text-3xl font-medium text-primary-500 mb-6">
-            {t('home.subtitle')}
-          </h2>
 
           {/* Description */}
           <p className="text-xl text-dark-muted mb-12 max-w-2xl mx-auto">
@@ -105,14 +101,17 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* About Section */}
+      {/* Internal Learning Platform Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-dark-surface">
         <div className="max-w-4xl mx-auto text-center">
           <h3 className="text-3xl font-bold text-dark-text mb-8">
-            {t('home.description')}
+            {t('home.platform.title')}
           </h3>
-          <p className="text-lg text-dark-muted mb-12 max-w-2xl mx-auto">
-            {t('home.intro')}
+          <p className="text-lg text-dark-muted mb-6 max-w-2xl mx-auto">
+            {t('home.platform.description')}
+          </p>
+          <p className="text-lg text-primary-400 mb-12 max-w-2xl mx-auto font-medium">
+            {t('home.platform.chineseDescription')}
           </p>
           <Link href="/billboard" className="btn-secondary">
             {t('nav.billboard')}

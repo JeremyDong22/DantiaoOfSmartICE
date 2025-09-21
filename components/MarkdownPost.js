@@ -1,7 +1,7 @@
 // SmartICE Markdown Post Component
-// Version: 1.1.0 - Fixed layout issues: improved spacing, sticky TOC, proper markdown bold rendering, and mobile responsiveness
+// Version: 1.7.0 - Fixed TOC navigation by properly extracting text from React children for consistent ID generation
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import remarkBreaks from 'remark-breaks'
@@ -13,6 +13,88 @@ const MarkdownPost = ({ content, title, author = 'Jeremy', date = new Date().toL
   const { t } = useTranslation('common')
   const [tableOfContents, setTableOfContents] = useState([])
   const [readingTime, setReadingTime] = useState(0)
+  const [activeSection, setActiveSection] = useState('')
+  const [hoveredItem, setHoveredItem] = useState(null)
+  const observerRef = useRef(null)
+  const timeoutRef = useRef(null)
+
+  // Generate ID from text that works with both English and Chinese
+  const generateId = (text) => {
+    return text
+      .toString()
+      .toLowerCase()
+      .trim()
+      // Remove emoji and special characters but keep Chinese characters
+      .replace(/[^\w\u4e00-\u9fff\s-]/g, '')
+      // Replace spaces with hyphens
+      .replace(/\s+/g, '-')
+      // Remove multiple consecutive hyphens
+      .replace(/-+/g, '-')
+      // Remove leading/trailing hyphens
+      .replace(/^-|-$/g, '')
+  }
+
+  // Helper function to extract plain text from React children
+  const extractTextFromChildren = (children) => {
+    if (typeof children === 'string') {
+      return children
+    }
+    if (Array.isArray(children)) {
+      return children.map(child => extractTextFromChildren(child)).join('')
+    }
+    if (children?.props?.children) {
+      return extractTextFromChildren(children.props.children)
+    }
+    return ''
+  }
+
+  // Setup intersection observer for active section tracking
+  const setupIntersectionObserver = useCallback(() => {
+    if (observerRef.current) {
+      observerRef.current.disconnect()
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // Clear any pending timeout
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current)
+        }
+
+        // Set a small delay to avoid rapid switching
+        timeoutRef.current = setTimeout(() => {
+          // Find the entry that's most visible
+          let mostVisibleEntry = null
+          let maxRatio = 0
+
+          entries.forEach((entry) => {
+            if (entry.isIntersecting && entry.intersectionRatio > maxRatio) {
+              maxRatio = entry.intersectionRatio
+              mostVisibleEntry = entry
+            }
+          })
+
+          if (mostVisibleEntry) {
+            setActiveSection(mostVisibleEntry.target.id)
+          }
+        }, 100)
+      },
+      {
+        rootMargin: '-120px 0px -75% 0px',
+        threshold: [0, 0.1, 0.3, 0.7, 1.0]
+      }
+    )
+
+    observerRef.current = observer
+
+    // Observe all heading elements
+    tableOfContents.forEach((item) => {
+      const element = document.getElementById(item.id)
+      if (element) {
+        observer.observe(element)
+      }
+    })
+  }, [tableOfContents])
 
   // Calculate reading time and generate table of contents
   useEffect(() => {
@@ -27,12 +109,33 @@ const MarkdownPost = ({ content, title, author = 'Jeremy', date = new Date().toL
       const toc = headers.map((header, index) => {
         const level = (header.match(/^#+/) || [''])[0].length
         const text = header.replace(/^#+\s/, '').replace(/\s*\{.*\}$/, '')
-        const id = text.toLowerCase().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, '-')
+        const id = generateId(text)
+        console.log('TOC item - Text:', text, 'ID:', id) // Debug log
         return { level, text, id, index }
       })
       setTableOfContents(toc)
     }
   }, [content])
+
+  // Setup intersection observer when TOC is ready
+  useEffect(() => {
+    if (tableOfContents.length > 0) {
+      // Small delay to ensure DOM is ready
+      const timer = setTimeout(() => {
+        setupIntersectionObserver()
+      }, 500)
+
+      return () => {
+        clearTimeout(timer)
+        if (observerRef.current) {
+          observerRef.current.disconnect()
+        }
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current)
+        }
+      }
+    }
+  }, [setupIntersectionObserver])
 
   // Copy to clipboard function
   const copyToClipboard = (text) => {
@@ -45,37 +148,38 @@ const MarkdownPost = ({ content, title, author = 'Jeremy', date = new Date().toL
   const components = {
     // Custom heading renderer with anchor links
     h1: ({ children, ...props }) => {
-      const text = children[0] || ''
-      const id = text.toString().toLowerCase().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, '-')
+      const text = extractTextFromChildren(children)
+      const id = generateId(text)
       return (
-        <h1 id={id} className="text-4xl font-bold text-dark-text mb-6 scroll-mt-24" {...props}>
+        <h1 id={id} className="text-4xl font-bold text-dark-text mb-6 scroll-mt-32" {...props}>
           {children}
         </h1>
       )
     },
     h2: ({ children, ...props }) => {
-      const text = children[0] || ''
-      const id = text.toString().toLowerCase().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, '-')
+      const text = extractTextFromChildren(children)
+      const id = generateId(text)
+      console.log('H2 - Text:', text, 'ID:', id) // Debug log
       return (
-        <h2 id={id} className="text-3xl font-semibold text-dark-text mt-12 mb-4 scroll-mt-24" {...props}>
+        <h2 id={id} className="text-3xl font-semibold text-dark-text mt-12 mb-4 scroll-mt-32" {...props}>
           {children}
         </h2>
       )
     },
     h3: ({ children, ...props }) => {
-      const text = children[0] || ''
-      const id = text.toString().toLowerCase().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, '-')
+      const text = extractTextFromChildren(children)
+      const id = generateId(text)
       return (
-        <h3 id={id} className="text-2xl font-semibold text-dark-text mt-8 mb-3 scroll-mt-24" {...props}>
+        <h3 id={id} className="text-2xl font-semibold text-dark-text mt-8 mb-3 scroll-mt-32" {...props}>
           {children}
         </h3>
       )
     },
     h4: ({ children, ...props }) => {
-      const text = children[0] || ''
-      const id = text.toString().toLowerCase().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, '-')
+      const text = extractTextFromChildren(children)
+      const id = generateId(text)
       return (
-        <h4 id={id} className="text-xl font-semibold text-dark-text mt-6 mb-2 scroll-mt-24" {...props}>
+        <h4 id={id} className="text-xl font-semibold text-dark-text mt-6 mb-2 scroll-mt-32" {...props}>
           {children}
         </h4>
       )
@@ -183,12 +287,96 @@ const MarkdownPost = ({ content, title, author = 'Jeremy', date = new Date().toL
   }
 
   const scrollToSection = (id) => {
+    console.log('Scrolling to section:', id) // Debug log
     const element = document.getElementById(id)
+    console.log('Element found:', element) // Debug log
+
     if (element) {
-      // Account for fixed header/nav by adding offset
-      const yOffset = -80 // Adjust this value based on your header height
+      // Account for fixed header/nav and provide better spacing
+      const yOffset = -120 // Increased offset for better spacing from top navigation
       const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset
-      window.scrollTo({ top: y, behavior: 'smooth' })
+
+      // Smooth scroll with better easing
+      window.scrollTo({
+        top: y,
+        behavior: 'smooth'
+      })
+
+      // Update active section immediately for better UX
+      setActiveSection(id)
+
+      // Add a small visual feedback with improved animation
+      element.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
+      element.style.transform = 'scale(1.01)'
+      element.style.background = 'rgba(59, 130, 246, 0.08)'
+      element.style.borderRadius = '0.5rem'
+
+      setTimeout(() => {
+        element.style.transform = 'scale(1)'
+        element.style.background = 'transparent'
+        element.style.borderRadius = '0'
+      }, 800)
+    } else {
+      console.error('Element not found with id:', id) // Debug error
+    }
+  }
+
+  // Get hierarchy-specific styling
+  const getHierarchyStyles = (level, isActive, isHovered) => {
+    const baseStyles = {
+      transition: 'all 0.2s ease',
+      borderRadius: '0.375rem',
+      padding: '0.5rem 0.75rem',
+      margin: '0.125rem 0',
+      cursor: 'pointer',
+      display: 'block',
+      width: '100%',
+      textAlign: 'left',
+      border: 'none',
+      background: 'transparent',
+    }
+
+    const levelStyles = {
+      1: {
+        fontSize: '1rem',
+        fontWeight: '700',
+        color: isActive ? '#3b82f6' : '#e5e7eb',
+        paddingLeft: '0.75rem',
+        borderLeft: isActive ? '3px solid #3b82f6' : '3px solid transparent',
+      },
+      2: {
+        fontSize: '0.9rem',
+        fontWeight: '600',
+        color: isActive ? '#3b82f6' : '#d1d5db',
+        paddingLeft: '1.5rem',
+        borderLeft: isActive ? '2px solid #3b82f6' : '2px solid transparent',
+      },
+      3: {
+        fontSize: '0.8rem',
+        fontWeight: '500',
+        color: isActive ? '#3b82f6' : '#9ca3af',
+        paddingLeft: '2.25rem',
+        borderLeft: isActive ? '1px solid #3b82f6' : '1px solid transparent',
+      },
+      4: {
+        fontSize: '0.75rem',
+        fontWeight: '400',
+        color: isActive ? '#3b82f6' : '#6b7280',
+        paddingLeft: '3rem',
+        opacity: isActive ? 1 : 0.8,
+      }
+    }
+
+    const hoverStyles = isHovered ? {
+      background: 'rgba(59, 130, 246, 0.1)',
+      color: '#60a5fa',
+      transform: 'translateX(4px)',
+    } : {}
+
+    return {
+      ...baseStyles,
+      ...levelStyles[level] || levelStyles[4],
+      ...hoverStyles
     }
   }
 
@@ -218,39 +406,75 @@ const MarkdownPost = ({ content, title, author = 'Jeremy', date = new Date().toL
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Table of Contents */}
           {tableOfContents.length > 0 && (
-            <aside className="lg:w-72 lg:flex-shrink-0 mb-6 lg:mb-0">
-              <div className="lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)] lg:overflow-y-auto">
-                <div className="bg-dark-surface border border-dark-border rounded-xl p-4 lg:p-6">
-                  <h3 className="text-base lg:text-lg font-semibold text-dark-text mb-3 lg:mb-4">
-                    {t('post.tableOfContents')}
-                  </h3>
-                  <nav className="mobile-toc lg:max-h-none overflow-y-auto lg:overflow-y-visible">
-                    <ul className="space-y-1.5 lg:space-y-2">
-                      {tableOfContents.map((item, index) => (
+            <aside className="lg:w-80 lg:flex-shrink-0 mb-6 lg:mb-0">
+              {/* Mobile TOC - Collapsible */}
+              <div className="lg:hidden bg-dark-surface border border-dark-border rounded-xl p-4 mb-6">
+                <h3 className="text-base font-semibold text-dark-text mb-3">
+                  {t('post.tableOfContents')}
+                </h3>
+                <nav className="mobile-toc">
+                  <ul className="space-y-0.5">
+                    {tableOfContents.map((item, index) => {
+                      const isActive = activeSection === item.id
+                      const isHovered = hoveredItem === index
+
+                      return (
                         <li key={index}>
                           <button
                             onClick={() => scrollToSection(item.id)}
-                            className={`text-left w-full hover:text-primary-500 transition-colors leading-relaxed ${
-                              item.level === 1 ? 'font-semibold text-dark-text' : 'text-dark-muted'
-                            }`}
-                            style={{
-                              paddingLeft: `${Math.max(0, (item.level - 1) * 0.75)}rem`,
-                              fontSize: item.level === 1 ? '0.85rem' : item.level === 2 ? '0.8rem' : '0.75rem'
-                            }}
+                            onMouseEnter={() => setHoveredItem(index)}
+                            onMouseLeave={() => setHoveredItem(null)}
+                            className="leading-relaxed"
+                            style={getHierarchyStyles(item.level, isActive, isHovered)}
+                            aria-current={isActive ? 'location' : undefined}
                           >
                             {item.text}
                           </button>
                         </li>
-                      ))}
-                    </ul>
-                  </nav>
+                      )
+                    })}
+                  </ul>
+                </nav>
+              </div>
+
+              {/* Desktop TOC - Fixed and Scrollable with Gradient Border */}
+              <div className="hidden lg:block toc-desktop-container">
+                <div className="toc-gradient-border shadow-2xl">
+                  <div className="p-6">
+                    <h3 className="text-lg font-semibold text-dark-text mb-4 sticky top-0 bg-dark-surface pb-2 border-b border-dark-border">
+                      {t('post.tableOfContents')}
+                    </h3>
+                    <nav className="overflow-y-auto max-h-[calc(100vh-14rem)] pr-2 custom-scrollbar">
+                      <ul className="space-y-0.5">
+                        {tableOfContents.map((item, index) => {
+                          const isActive = activeSection === item.id
+                          const isHovered = hoveredItem === index
+
+                          return (
+                            <li key={index}>
+                              <button
+                                onClick={() => scrollToSection(item.id)}
+                                onMouseEnter={() => setHoveredItem(index)}
+                                onMouseLeave={() => setHoveredItem(null)}
+                                className={`leading-relaxed toc-item w-full text-left ${isActive ? 'active' : ''}`}
+                                style={getHierarchyStyles(item.level, isActive, isHovered)}
+                                aria-current={isActive ? 'location' : undefined}
+                              >
+                                {item.text}
+                              </button>
+                            </li>
+                          )
+                        })}
+                      </ul>
+                    </nav>
+                  </div>
                 </div>
               </div>
             </aside>
           )}
 
           {/* Main Content */}
-          <main className="flex-1 min-w-0">
+          <main className="flex-1 min-w-0 toc-main-content">
             <article className="prose prose-lg max-w-none">
               <ReactMarkdown
                 components={components}

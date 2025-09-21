@@ -6,10 +6,7 @@
   },
   "home": {
     "title": "SMARTICE",
-    "subtitle": "Challenge Accepted",
-    "description": "Internal Learning Platform",
     "welcome": "Welcome to SMARTICE Internal Learning Platform",
-    "intro": "A platform designed for team learning and knowledge sharing.",
     "features": {
       "title": "Platform Features",
       "learning": "Learning Resources",
@@ -18,6 +15,11 @@
       "sharingDesc": "Experience exchange among team members",
       "collaboration": "Collaborative Learning",
       "collaborationDesc": "Growing together, promoting each other"
+    },
+    "platform": {
+      "title": "Internal Learning Platform",
+      "description": "A platform designed for team learning and knowledge sharing",
+      "chineseDescription": "为SMARTICE团队学习和知识分享而设计的平台"
     },
     "getStarted": "Get Started"
   },

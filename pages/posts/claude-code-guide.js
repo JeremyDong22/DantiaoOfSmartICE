@@ -1,5 +1,5 @@
 // SmartICE Claude Code Guide Post Page
-// Version: 1.1.0 - Updated date to September 22nd, 2025 and removed feedback widget
+// Version: 1.2.0 - Added bilingual support for Chinese and English content
 
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'next-i18next'
@@ -122,7 +122,7 @@ const ClaudeCodeGuidePage = ({ markdownContent }) => {
       {/* Print styles */}
       <style jsx>{`
         @media print {
-          nav, .fixed, button {
+          nav, .fixed, button, aside {
             display: none !important;
           }
           .card {
@@ -133,6 +133,9 @@ const ClaudeCodeGuidePage = ({ markdownContent }) => {
             background: white !important;
             color: black !important;
           }
+          main {
+            margin-left: 0 !important;
+          }
         }
       `}</style>
     </>
@@ -141,8 +144,13 @@ const ClaudeCodeGuidePage = ({ markdownContent }) => {
 
 export async function getStaticProps({ locale }) {
   try {
-    // Read the markdown file
-    const filePath = path.join(process.cwd(), 'claude-code-guide.md')
+    // Choose the appropriate markdown file based on locale
+    let fileName = 'claude-code-guide.md' // Default to English
+    if (locale === 'zh') {
+      fileName = 'claude-code-guide-zh.md'
+    }
+
+    const filePath = path.join(process.cwd(), fileName)
     const markdownContent = fs.readFileSync(filePath, 'utf8')
 
     return {
@@ -155,10 +163,16 @@ export async function getStaticProps({ locale }) {
     // Log error for debugging during build time
     // eslint-disable-next-line no-console
     console.error('Error reading markdown file:', error)
+
+    // Provide localized error message
+    const errorMessage = locale === 'zh'
+      ? '# 错误\n\n无法加载 Claude Code 指南内容。'
+      : '# Error\n\nCould not load the Claude Code guide content.'
+
     return {
       props: {
         ...(await serverSideTranslations(locale, ['common'])),
-        markdownContent: '# Error\n\nCould not load the Claude Code guide content.',
+        markdownContent: errorMessage,
       },
     }
   }
