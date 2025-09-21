@@ -10,13 +10,30 @@ import MarkdownPost from '../../components/MarkdownPost'
 import fs from 'fs'
 import path from 'path'
 
-const ClaudeCodeGuidePage = ({ markdownContent }) => {
-  const { t } = useTranslation('common')
+const ClaudeCodeGuidePage = ({ markdownContent, fallbackMode }) => {
+  const { t, i18n } = useTranslation('common')
   const [mounted, setMounted] = useState(false)
+  const [content, setContent] = useState(markdownContent)
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     setMounted(true)
-  }, [])
+
+    // If in fallback mode, try to fetch from API
+    if (fallbackMode && mounted) {
+      setLoading(true)
+      const fileName = i18n.language === 'zh' ? 'claude-code-guide-zh.md' : 'claude-code-guide.md'
+      fetch(`/api/content?file=${fileName}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.content) {
+            setContent(data.content)
+          }
+        })
+        .catch(err => console.error('Failed to fetch content from API:', err))
+        .finally(() => setLoading(false))
+    }
+  }, [mounted, fallbackMode, i18n.language])
 
   if (!mounted) {
     return null
@@ -81,12 +98,18 @@ const ClaudeCodeGuidePage = ({ markdownContent }) => {
         </nav>
 
         {/* Main Content */}
-        <MarkdownPost
-          content={markdownContent}
-          title={t('post.claudeCodeGuide.title')}
-          author="Jeremy"
-          date={new Date('2025-09-22').toLocaleDateString()}
-        />
+        {loading ? (
+          <div className="text-center py-20">
+            <p className="text-dark-muted">加载中...</p>
+          </div>
+        ) : (
+          <MarkdownPost
+            content={content}
+            title={t('post.claudeCodeGuide.title')}
+            author="Jeremy"
+            date={new Date('2025-09-22').toLocaleDateString()}
+          />
+        )}
 
         {/* Bottom Navigation */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 pt-8 border-t border-dark-border">
@@ -222,6 +245,7 @@ export async function getStaticProps({ locale }) {
       props: {
         ...(await serverSideTranslations(locale, ['common'])),
         markdownContent,
+        fallbackMode: false,
       },
     }
   } catch (error) {
@@ -243,6 +267,7 @@ export async function getStaticProps({ locale }) {
       props: {
         ...(await serverSideTranslations(locale, ['common'])),
         markdownContent: errorMessage,
+        fallbackMode: true, // Enable API fallback when build fails
       },
     }
   }
