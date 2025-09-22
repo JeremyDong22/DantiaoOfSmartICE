@@ -36,7 +36,7 @@
 想要和 AI 愉快玩耍，你需要先拿到入场券：
 
 ### 登录凭证
-- **邮箱**: `smartice.ai@outlook.com`
+- **邮箱**: smartice.ai@outlook.com
 - **密码**: 找 Jeremy 要（没错，就是要去麻烦他）
 - **手机验证**: Jeremy 的手机（他就是我们的守门大叔，人很 nice 的）
 
@@ -68,7 +68,7 @@
 
 1. **打开网站**: [claude.ai](https://claude.ai)
 2. **点击登录**: 右上角那个按钮，很显眼的
-3. **输入邮箱**: `smartice.ai@outlook.com`
+3. **输入邮箱**: smartice.ai@outlook.com
 4. **输入密码**: Jeremy 给你的那个（没给的话赶紧去要）
 5. **检查邮件**: 去 Outlook 找验证邮件
 6. **点击验证**: 点邮件里的链接
@@ -103,7 +103,7 @@
 3. 从开始菜单或桌面图标启动
 
 #### 第三步：登录（和 Web 版一样）
-1. 输入邮箱 `smartice.ai@outlook.com`
+1. 输入邮箱 smartice.ai@outlook.com
 2. 输入 Jeremy 给你的密码
 3. 去邮箱点验证链接
 4. 搞定！
@@ -281,6 +281,6 @@ claude-code --help
 - [Microsoft Office](https://www.office.com/) （可选，完整版 Office 套件）
 
 ### 登录信息：
-- 邮箱: `smartice.ai@outlook.com`
+- 邮箱: smartice.ai@outlook.com
 - 密码: 找 Jeremy 要
 - 手机验证: Jeremy 的手机
