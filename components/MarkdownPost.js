@@ -1,5 +1,5 @@
 // SmartICE Markdown Post Component
-// Version: 1.8.2 - Fixed list item text color inheritance issue
+// Version: 1.8.3 - Fixed inline code detection logic for proper rendering
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import ReactMarkdown from 'react-markdown'
@@ -255,14 +255,18 @@ const MarkdownPost = ({ content, title, author = 'Jeremy', date = new Date().toL
       )
     },
     // Inline code styling
-    code: ({ inline, children, ...props }) =>
-      inline ? (
+    code: ({ inline, className, children, ...props }) => {
+      // Check if it's inline code by checking the className or if inline is explicitly true
+      const isInline = inline !== false && !className?.includes('language-')
+
+      return isInline ? (
         <code className="bg-dark-surface/50 text-cyan-300 font-medium px-1.5 py-0.5 rounded text-sm border border-dark-border/50" {...props}>
           {children}
         </code>
       ) : (
-        <code {...props}>{children}</code>
-      ),
+        <code className={className} {...props}>{children}</code>
+      )
+    },
     // Custom list styling
     ul: ({ children, ...props }) => (
       <ul className="list-disc list-inside text-dark-muted mb-4 space-y-1" {...props}>
