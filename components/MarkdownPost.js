@@ -1,5 +1,5 @@
 // SmartICE Markdown Post Component
-// Version: 1.8.3 - Fixed inline code detection logic for proper rendering
+// Version: 1.8.8 - Fixed H1 parsing to properly hide first H1 from content while displaying in header
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import ReactMarkdown from 'react-markdown'
@@ -15,6 +15,8 @@ const MarkdownPost = ({ content, title, author = 'Jeremy', date = new Date().toL
   const [readingTime, setReadingTime] = useState(0)
   const [activeSection, setActiveSection] = useState('')
   const [hoveredItem, setHoveredItem] = useState(null)
+  const [parsedTitle, setParsedTitle] = useState(title)
+  const [processedContent, setProcessedContent] = useState(content)
   const observerRef = useRef(null)
   const timeoutRef = useRef(null)
   const headingIdMap = useRef(new Map())
@@ -111,12 +113,74 @@ const MarkdownPost = ({ content, title, author = 'Jeremy', date = new Date().toL
       // Clear the heading ID map for fresh generation
       headingIdMap.current.clear()
 
-      // Generate table of contents from headers
-      const headers = content.match(/^#{1,6}\s.+$/gm) || []
+      // Parse content line by line to skip code blocks and process content
+      const lines = content.split('\n')
+      const headers = []
+      const processedLines = []
+      let inCodeBlock = false
+      let firstH1Found = false
+
+      lines.forEach(line => {
+        // Check if we're entering or exiting a code block
+        if (line.startsWith('```')) {
+          inCodeBlock = !inCodeBlock
+          processedLines.push(line)
+          return
+        }
+
+        // Always add non-heading lines to processed content
+        if (inCodeBlock || !(/^#{1,6}\s.+$/.test(line))) {
+          processedLines.push(line)
+          return
+        }
+
+        // This is a heading line
+        const level = (line.match(/^#+/) || [''])[0].length
+
+        // If this is the first H1, extract it as the page title and skip it
+        if (level === 1 && !firstH1Found) {
+          firstH1Found = true
+          const extractedTitle = line
+            .replace(/^#+\s/, '')           // Remove heading markers
+            .replace(/\s*\{.*\}$/, '')       // Remove any custom IDs
+            .replace(/\*\*(.*?)\*\*/g, '$1') // Remove bold markers
+            .replace(/\*(.*?)\*/g, '$1')     // Remove italic markers
+            .replace(/`(.*?)`/g, '$1')       // Remove inline code markers
+            .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Remove link formatting
+            .replace(/[:：]\s*$/, '')         // Remove trailing colons (both English and Chinese)
+
+          // Set the parsed title, or fall back to prop title if extraction fails
+          setParsedTitle(extractedTitle.trim() || title)
+
+          // Skip adding the first H1 to both processed content and TOC
+          return
+        }
+
+        // Add all other headers to both processed content and TOC
+        processedLines.push(line)
+        headers.push(line)
+      })
+
+      // If no H1 was found in the content, use the prop title
+      if (!firstH1Found) {
+        setParsedTitle(title)
+      }
+
+      // Set the processed content (with first H1 removed)
+      setProcessedContent(processedLines.join('\n'))
+
       const seenIds = new Set()
       const toc = headers.map((header, index) => {
         const level = (header.match(/^#+/) || [''])[0].length
-        const text = header.replace(/^#+\s/, '').replace(/\s*\{.*\}$/, '')
+        // Remove markdown formatting from headers for TOC display
+        const text = header
+          .replace(/^#+\s/, '')           // Remove heading markers
+          .replace(/\s*\{.*\}$/, '')       // Remove any custom IDs
+          .replace(/\*\*(.*?)\*\*/g, '$1') // Remove bold markers
+          .replace(/\*(.*?)\*/g, '$1')     // Remove italic markers
+          .replace(/`(.*?)`/g, '$1')       // Remove inline code markers
+          .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Remove link formatting
+          .replace(/[:：]\s*$/, '')         // Remove trailing colons (both English and Chinese)
         let id = generateId(text)
 
         // Ensure unique IDs
@@ -135,7 +199,7 @@ const MarkdownPost = ({ content, title, author = 'Jeremy', date = new Date().toL
       })
       setTableOfContents(toc)
     }
-  }, [content])
+  }, [content, title])
 
   // Setup intersection observer when TOC is ready
   useEffect(() => {
@@ -413,7 +477,7 @@ const MarkdownPost = ({ content, title, author = 'Jeremy', date = new Date().toL
       <header className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
         <div className="max-w-4xl">
           <h1 className="text-4xl md:text-5xl font-bold text-dark-text mb-4">
-            {title}
+            {parsedTitle}
           </h1>
           <div className="flex flex-wrap items-center gap-4 text-dark-muted">
             <span>
@@ -510,7 +574,7 @@ const MarkdownPost = ({ content, title, author = 'Jeremy', date = new Date().toL
                 remarkPlugins={[remarkGfm, remarkBreaks]}
                 rehypePlugins={[rehypeHighlight, rehypeRaw]}
               >
-                {content}
+                {processedContent}
               </ReactMarkdown>
             </article>
           </main>

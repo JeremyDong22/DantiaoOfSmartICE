@@ -85,3 +85,31 @@ Custom markdown renderer with:
 - Images optimized with Next.js Image component
 - CSS optimization enabled in production
 - Security headers configured for production deployment
+
+## Claude Code Subagents
+
+### Blog Writer Subagent
+Located in `.claude/agents/blog-writer.md`, this specialized subagent maintains consistency with the established Claude Code Guide format and style:
+
+**Key Features:**
+- Follows exact formatting patterns from existing documentation
+- Bilingual content creation (Chinese/English)
+- Professional yet approachable tone
+- Consistent emoji usage and header structures
+- Technical accuracy with practical examples
+- Built-in quality checklists and format verification
+
+**Usage:**
+- Automatically invoked for technical documentation and blog post creation
+- Maintains consistency with the Claude Code Guide style
+- Ensures proper markdown formatting and structure
+- Includes version tracking and comprehensive troubleshooting sections
+
+**Tools Access:** Read, Write, Glob, Grep, MultiEdit
+**Model:** Sonnet
+
+### Subagent Management
+- Project-level subagents stored in `.claude/agents/`
+- Version controlled and shared across team
+- See `.claude/agents/README.md` for detailed documentation
+- Examples and usage patterns in `.claude/agents/usage-examples.md`
