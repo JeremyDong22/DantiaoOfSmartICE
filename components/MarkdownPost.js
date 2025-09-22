@@ -1,5 +1,5 @@
 // SmartICE Markdown Post Component
-// Version: 1.8.1 - Improved inline code visibility by changing text color from cyan-400 to cyan-300
+// Version: 1.8.2 - Fixed list item text color inheritance issue
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import ReactMarkdown from 'react-markdown'
@@ -275,7 +275,7 @@ const MarkdownPost = ({ content, title, author = 'Jeremy', date = new Date().toL
       </ol>
     ),
     li: ({ children, ...props }) => (
-      <li className="ml-4" {...props}>
+      <li className="ml-4 text-dark-muted" {...props}>
         {children}
       </li>
     ),
