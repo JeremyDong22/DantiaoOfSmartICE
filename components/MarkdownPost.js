@@ -1,5 +1,5 @@
 // SmartICE Markdown Post Component
-// Version: 1.8.8 - Fixed H1 parsing to properly hide first H1 from content while displaying in header
+// Version: 1.8.9 - Fixed TOC border styling to use CSS pseudo-elements instead of inline styles to prevent overlapping
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import ReactMarkdown from 'react-markdown'
@@ -417,7 +417,7 @@ const MarkdownPost = ({ content, title, author = 'Jeremy', date = new Date().toL
     const baseStyles = {
       transition: 'all 0.2s ease',
       borderRadius: '0.375rem',
-      padding: '0.5rem 0.75rem',
+      padding: '0.5rem 0.75rem 0.5rem 0.75rem',
       margin: '0.125rem 0',
       cursor: 'pointer',
       display: 'block',
@@ -425,6 +425,7 @@ const MarkdownPost = ({ content, title, author = 'Jeremy', date = new Date().toL
       textAlign: 'left',
       border: 'none',
       background: 'transparent',
+      position: 'relative',
     }
 
     const levelStyles = {
@@ -432,22 +433,19 @@ const MarkdownPost = ({ content, title, author = 'Jeremy', date = new Date().toL
         fontSize: '1rem',
         fontWeight: '700',
         color: isActive ? '#3b82f6' : '#e5e7eb',
-        paddingLeft: '0.75rem',
-        borderLeft: isActive ? '3px solid #3b82f6' : '3px solid transparent',
+        paddingLeft: isActive ? '1rem' : '0.75rem',
       },
       2: {
         fontSize: '0.9rem',
         fontWeight: '600',
         color: isActive ? '#3b82f6' : '#d1d5db',
         paddingLeft: '1.5rem',
-        borderLeft: isActive ? '2px solid #3b82f6' : '2px solid transparent',
       },
       3: {
         fontSize: '0.8rem',
         fontWeight: '500',
         color: isActive ? '#3b82f6' : '#9ca3af',
         paddingLeft: '2.25rem',
-        borderLeft: isActive ? '1px solid #3b82f6' : '1px solid transparent',
       },
       4: {
         fontSize: '0.75rem',
@@ -517,7 +515,7 @@ const MarkdownPost = ({ content, title, author = 'Jeremy', date = new Date().toL
                             onClick={() => scrollToSection(item.id)}
                             onMouseEnter={() => setHoveredItem(index)}
                             onMouseLeave={() => setHoveredItem(null)}
-                            className="leading-relaxed"
+                            className={`leading-relaxed toc-item toc-item-level-${item.level} w-full text-left ${isActive ? 'active' : ''}`}
                             style={getHierarchyStyles(item.level, isActive, isHovered)}
                             aria-current={isActive ? 'location' : undefined}
                           >
@@ -549,7 +547,7 @@ const MarkdownPost = ({ content, title, author = 'Jeremy', date = new Date().toL
                                 onClick={() => scrollToSection(item.id)}
                                 onMouseEnter={() => setHoveredItem(index)}
                                 onMouseLeave={() => setHoveredItem(null)}
-                                className={`leading-relaxed toc-item w-full text-left ${isActive ? 'active' : ''}`}
+                                className={`leading-relaxed toc-item toc-item-level-${item.level} w-full text-left ${isActive ? 'active' : ''}`}
                                 style={getHierarchyStyles(item.level, isActive, isHovered)}
                                 aria-current={isActive ? 'location' : undefined}
                               >
